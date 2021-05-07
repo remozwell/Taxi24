@@ -75,7 +75,9 @@ namespace Taxi24RestAPI
         protected ConfigurationContext GetConfiguration()
         {
             double.TryParse(Configuration["KMDefaultRadius"], out double kmDefault);
-            return new ConfigurationContext(kmDefault);
+            int.TryParse(Configuration["ConductoresDisponiblesDefault"], out int ConductoresDisponiblesDefault);
+            
+            return new ConfigurationContext(kmDefault, ConductoresDisponiblesDefault);
         }
 
 

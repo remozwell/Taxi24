@@ -123,6 +123,51 @@ namespace Taxi24RestAPI.Bussiness
 
         #endregion
 
+        #region PasajerosMethods
+        public List<PasajeroModel> GetPasajeros()
+        {
+            return _context.Tbl_Pasajeros.ToList();
+        }
+
+
+        public PasajeroModel GetPasajeroByID(int ID)
+        {
+            return _context.Tbl_Pasajeros.First(x => x.ID == ID);
+        }
+
+
+
+        public List<ConductorModel> GetAvailableConductores(int pasajeroID, double lat, double lon, double km, int cantidadConductores)
+        {
+
+            if (km <= 0)
+            {
+                km = _configContext.RadioKilometroDefault;
+            }
+
+            if(cantidadConductores <= 0)
+            {
+                cantidadConductores = _configContext.CantidadConductoresDefault;
+            }
+
+            var pasajero = _context.Tbl_Pasajeros.First(x => x.ID == pasajeroID);
+            pasajero.UbicacionLatitud = lat;
+            pasajero.UbicacionLongitud = lon;
+            var listAvailableConductores = this.GetAvailableConductores(lat, lon, km);
+
+            var conductoresCercanos = listAvailableConductores.OrderBy(x =>
+                                    DistanciaGeograficaHelper.GetKmDistance(
+                                        new GeoCoordinate(x.UbicacionLatitud, x.UbicacionLongitud),
+                                        new GeoCoordinate(lat, lon)))
+                                    .Where((x, i) => i < cantidadConductores).ToList();
+
+            return conductoresCercanos;
+
+
+
+        }
+
+        #endregion
 
     }
 }

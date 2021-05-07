@@ -14,7 +14,7 @@ namespace Taxi24RestAPI.Controllers
 {
 
     [ApiController]
-    [Route("Conductores")]
+    [Route("Viajes")]
     public class ViajeController : Controller
     {
         private readonly BussinessLogic context;

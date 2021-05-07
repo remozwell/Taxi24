@@ -9,7 +9,7 @@ namespace Taxi24RestAPI.Models
     {
         public int ID { get; set; }
         public string Nombre { get; set; }
-        public float UbicacionLatitud { get; set; }
-        public float UbicacionLongitud { get; set; }
+        public double UbicacionLatitud { get; set; }
+        public double UbicacionLongitud { get; set; }
     }
 }
