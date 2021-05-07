@@ -29,10 +29,14 @@ namespace Taxi24RestAPI
         {
             services.AddControllers();
 
+            services.AddSingleton(GetConfiguration());
+
+
             bool.TryParse(Configuration["UseSQLite"], out bool useSQLite);
             if (useSQLite)
             {
                 services.AddEntityFrameworkSqlite().AddDbContext<TaxiContext>(options => options.UseSqlite($"Filename={Configuration["SQLiteFile"]}"));
+
             }
             else
             {
@@ -63,6 +67,13 @@ namespace Taxi24RestAPI
             {
                 endpoints.MapControllers();
             });
+        }
+
+
+        protected ConfigurationContext GetConfiguration()
+        {
+            double.TryParse(Configuration["KMDefaultRadius"], out double kmDefault);
+            return new ConfigurationContext(kmDefault);
         }
     }
 }

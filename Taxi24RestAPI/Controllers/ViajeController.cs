@@ -5,149 +5,44 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Taxi24RestAPI.Bussiness;
 using Taxi24RestAPI.Data;
 using Taxi24RestAPI.Models;
+using GeoCoordinatePortable;
 
 namespace Taxi24RestAPI.Controllers
 {
+
+    [ApiController]
+    [Route("Conductores")]
     public class ViajeController : Controller
     {
-        private readonly TaxiContext _context;
+        private readonly BussinessLogic context;
+        private readonly ConfigurationContext configContext;
 
-        public ViajeController(TaxiContext context)
+        public ViajeController(TaxiContext _context, ConfigurationContext config)
         {
-            _context = context;
+            context = new BussinessLogic(_context);
+            configContext = config;
         }
 
-        // GET: Viaje
-        public async Task<IActionResult> Index()
+
+        [HttpGet]
+        [Route("NuevoViaje")]
+        public ActionResult<ViajeModel> PostNuevoViaje(PasajeroModel persona, GeoCoordinate destino, double km = 0)
         {
-            return View(await _context.Tbl_Viajes.ToListAsync());
-        }
-
-        // GET: Viaje/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
-
-            var viajeModel = await _context.Tbl_Viajes
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (viajeModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(viajeModel);
-        }
-
-        // GET: Viaje/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Viaje/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,IDConductor,IDPasajero,UbicacionInicialLatitud,UbicacionInicialLongitud,UbicacionFinalLatitud,UbicacionFinalLongitud,EstatusViaje")] ViajeModel viajeModel)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(viajeModel);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(viajeModel);
-        }
-
-        // GET: Viaje/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var viajeModel = await _context.Tbl_Viajes.FindAsync(id);
-            if (viajeModel == null)
-            {
-                return NotFound();
-            }
-            return View(viajeModel);
-        }
-
-        // POST: Viaje/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,IDConductor,IDPasajero,UbicacionInicialLatitud,UbicacionInicialLongitud,UbicacionFinalLatitud,UbicacionFinalLongitud,EstatusViaje")] ViajeModel viajeModel)
-        {
-            if (id != viajeModel.ID)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                if(km <= 0)
                 {
-                    _context.Update(viajeModel);
-                    await _context.SaveChangesAsync();
+                    km = configContext.RadioKilometroDefault;
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ViajeModelExists(viajeModel.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return Ok(context.GenerarNuevoViaje(persona,destino, km));
             }
-            return View(viajeModel);
-        }
-
-        // GET: Viaje/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                return BadRequest(ex.Message);
             }
-
-            var viajeModel = await _context.Tbl_Viajes
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (viajeModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(viajeModel);
-        }
-
-        // POST: Viaje/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var viajeModel = await _context.Tbl_Viajes.FindAsync(id);
-            _context.Tbl_Viajes.Remove(viajeModel);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool ViajeModelExists(int id)
-        {
-            return _context.Tbl_Viajes.Any(e => e.ID == id);
         }
     }
 }

@@ -15,10 +15,12 @@ namespace Taxi24RestAPI.Controllers
     public class ConductorController : ControllerBase
     {
         private readonly BussinessLogic context;
+        private readonly ConfigurationContext configContext;
 
-        public ConductorController(TaxiContext _context)
+        public ConductorController(TaxiContext _context, ConfigurationContext config)
         {
             context = new BussinessLogic(_context);
+            configContext = config;
         }
 
 
@@ -52,10 +54,15 @@ namespace Taxi24RestAPI.Controllers
 
         [HttpGet]
         [Route("ObtenerDisponibles")]
-        public ActionResult<List<ConductorModel>> GetAvailableConductors(double latitude, double longitude, double km = 3)
+        public ActionResult<List<ConductorModel>> GetAvailableConductors(double latitude, double longitude, double km = 0)
         {
             try
             {
+
+                if (km <= 0)
+                {
+                    km = configContext.RadioKilometroDefault;
+                }
                 return Ok(context.GetAvailableConductores(latitude, longitude, km));
             }
             catch (Exception ex)

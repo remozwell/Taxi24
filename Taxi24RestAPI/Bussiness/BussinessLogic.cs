@@ -56,6 +56,32 @@ namespace Taxi24RestAPI.Bussiness
 
         #region ViajesMethods
 
+        public ViajeModel GenerarNuevoViaje(PasajeroModel pasajero, GeoCoordinate destino, double km)
+        {
+
+            Random rd = new Random();
+            var conductoresDisponibles = GetAvailableConductores(pasajero.UbicacionLatitud, pasajero.UbicacionLongitud, km);
+            var conductor = conductoresDisponibles[rd.Next(0, conductoresDisponibles.Count() - 1)];
+
+            ViajeModel nuevoViaje = new ViajeModel()
+            {
+                IDConductor = conductor.ID,
+                IDPasajero = pasajero.ID,
+                Pasajero = pasajero,
+                Conductor = conductor,
+                EstatusViaje = 'A',
+                UbicacionInicialLatitud = pasajero.UbicacionLatitud,
+                UbicacionInicialLongitud = pasajero.UbicacionLongitud,
+                UbicacionFinalLatitud = destino.Latitude,
+                UbicacionFinalLongitud = destino.Longitude
+            };
+            var _return = _context.Tbl_Viajes.Add(nuevoViaje);
+            _context.SaveChanges();
+            return _return.Entity;
+
+        }
+
+
         #endregion
 
 
