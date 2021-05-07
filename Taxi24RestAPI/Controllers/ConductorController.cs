@@ -50,6 +50,39 @@ namespace Taxi24RestAPI.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("ObtenerDisponibles")]
+        public ActionResult<List<ConductorModel>> GetAvailableConductors(double latitude, double longitude, double km = 3)
+        {
+            try
+            {
+                return Ok(context.GetAvailableConductores(latitude, longitude, km));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [HttpGet]
+        [Route("ObtenerConductor")]
+        public ActionResult<ConductorModel> GetConductors(int ID)
+        {
+            try
+            {
+                return Ok(context.GetConductorByID(ID));
+            }
+            catch(NullReferenceException)
+            {
+                return NotFound("No se encontro ningun registro con este id");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
 
     }
 }

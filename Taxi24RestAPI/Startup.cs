@@ -28,11 +28,21 @@ namespace Taxi24RestAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            /*services.AddDbContext<TaxiContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("TaxiDBConnection")));*/
+
+            bool.TryParse(Configuration["UseSQLite"], out bool useSQLite);
+            if (useSQLite)
+            {
+                services.AddEntityFrameworkSqlite().AddDbContext<TaxiContext>(options => options.UseSqlite($"Filename={Configuration["SQLiteFile"]}"));
+            }
+            else
+            {
+            services.AddDbContext<TaxiContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("TaxiDBConnection")));
+
+            }
 
 
-            services.AddEntityFrameworkSqlite().AddDbContext<TaxiContext>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
