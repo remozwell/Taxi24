@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31129.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Taxi24RestAPI", "Taxi24RestAPI\Taxi24RestAPI.csproj", "{C925EA64-EB32-46DE-8667-ABCA35874859}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C925EA64-EB32-46DE-8667-ABCA35874859}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C925EA64-EB32-46DE-8667-ABCA35874859}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C925EA64-EB32-46DE-8667-ABCA35874859}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C925EA64-EB32-46DE-8667-ABCA35874859}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2970E384-9FA6-4E17-953A-3472008107B3}
+	EndGlobalSection
+EndGlobal
