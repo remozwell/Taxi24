@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Taxi24RestAPI.Data;
 using Microsoft.EntityFrameworkCore;
+using Taxi24RestAPI.Bussiness;
 
 namespace Taxi24RestAPI
 {
@@ -30,6 +31,7 @@ namespace Taxi24RestAPI
             services.AddControllers();
 
             services.AddSingleton(GetConfiguration());
+            services.AddSingleton(GetPriceGenerator());
 
 
             bool.TryParse(Configuration["UseSQLite"], out bool useSQLite);
@@ -74,6 +76,16 @@ namespace Taxi24RestAPI
         {
             double.TryParse(Configuration["KMDefaultRadius"], out double kmDefault);
             return new ConfigurationContext(kmDefault);
+        }
+
+
+
+        protected PriceGenerator GetPriceGenerator()
+        {
+            double.TryParse(Configuration["CostoBase"], out double CostoBase);
+            double.TryParse(Configuration["CostoKilometro"], out double CostoKilometro);
+            double.TryParse(Configuration["CostoMinuto"], out double CostoMinuto);
+            return new PriceGenerator(CostoBase, CostoKilometro, CostoMinuto);
         }
     }
 }

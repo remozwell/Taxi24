@@ -18,6 +18,7 @@ namespace Taxi24RestAPI.Data
         public DbSet<ConductorModel> Tbl_Conductores { get; set; }
         public DbSet<PasajeroModel> Tbl_Pasajeros { get; set; }
         public DbSet<ViajeModel> Tbl_Viajes { get; set; }
+        public DbSet<FacturaModel> Tbl_Facturas { get; set; }
 
 
         /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -30,6 +31,7 @@ namespace Taxi24RestAPI.Data
             modelBuilder.Entity<ConductorModel>().ToTable("Tbl_Conductores");
             modelBuilder.Entity<PasajeroModel>().ToTable("Tbl_Pasajeros");
             modelBuilder.Entity<ViajeModel>().ToTable("Tbl_Viajes");
+            modelBuilder.Entity<FacturaModel>().ToTable("Tbl_Facturas");
         }
     }
 }

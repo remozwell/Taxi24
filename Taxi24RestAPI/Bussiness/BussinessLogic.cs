@@ -11,10 +11,15 @@ namespace Taxi24RestAPI.Bussiness
     public class BussinessLogic
     {
         private readonly TaxiContext _context;
+        private readonly ConfigurationContext _configContext;
+        private readonly PriceGenerator _priceContext;
 
-        public BussinessLogic(TaxiContext context)
+        public BussinessLogic(TaxiContext context, ConfigurationContext config, PriceGenerator priceGenerator)
         {
             _context = context;
+            _configContext = config;
+
+            _priceContext = priceGenerator;
         }
 
         #region ConductoresMethods
@@ -37,6 +42,12 @@ namespace Taxi24RestAPI.Bussiness
 
         public List<ConductorModel> GetAvailableConductores(double lat, double lon, double km)
         {
+
+            if (km <= 0)
+            {
+                km = _configContext.RadioKilometroDefault;
+            }
+
             var puntoBusqueda = new GeoCoordinate(lat, lon);
             var distanciaGeografica = DistanciaGeograficaHelper.GetSquareRadiusCoordenate(puntoBusqueda, km);
 
@@ -55,6 +66,11 @@ namespace Taxi24RestAPI.Bussiness
 
 
         #region ViajesMethods
+        public List<ViajeModel> GetViajesActivos()
+        {
+            return _context.Tbl_Viajes.Where(x => x.EstatusViaje == 'A').ToList();
+        }
+
 
         public ViajeModel GenerarNuevoViaje(PasajeroModel pasajero, GeoCoordinate destino, double km)
         {
@@ -78,6 +94,29 @@ namespace Taxi24RestAPI.Bussiness
             var _return = _context.Tbl_Viajes.Add(nuevoViaje);
             _context.SaveChanges();
             return _return.Entity;
+
+        }
+
+        public FacturaModel CompletarViaje(ViajeModel viaje)
+        {
+            var thisViaje = _context.Tbl_Viajes.First(x => x.ID == viaje.ID);
+            thisViaje.FechaFinViaje = viaje.FechaFinViaje;
+            thisViaje.EstatusViaje = 'C';
+            _context.SaveChanges();
+
+            double finalPrice = _priceContext.GetPrecioViaje(thisViaje.getDistanciaRecorrida(), thisViaje.getMinutosViaje().Value);
+            FacturaModel nuevaFactura = new FacturaModel()
+            {
+                Costo = finalPrice,
+                duracionViaje = thisViaje.getMinutosViaje().Value,
+                distanciaRecorridaKM = thisViaje.getDistanciaRecorrida(),
+                viajeID = thisViaje.ID,
+                viaje = thisViaje
+            };
+
+            var entityFactura = _context.Tbl_Facturas.Add(nuevaFactura);
+            _context.SaveChanges();
+            return entityFactura.Entity;
 
         }
 

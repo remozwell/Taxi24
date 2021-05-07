@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Taxi24RestAPI.Bussiness;
+using GeoCoordinatePortable;
 
 namespace Taxi24RestAPI.Models
 {
@@ -16,12 +18,29 @@ namespace Taxi24RestAPI.Models
         public double UbicacionFinalLongitud { get; set; }
         public char EstatusViaje { get; set; }
 
+        public DateTime FechaInicioViaje { get; set; }
+        public DateTime? FechaFinViaje { get; set; }
+
         public ConductorModel Conductor {get;set;}
         public PasajeroModel Pasajero {get;set;}
 
-        public double distanciaRecorrida()
+        public double getDistanciaRecorrida()
         {
-            return 0;
+            GeoCoordinate p1 = new GeoCoordinate(UbicacionInicialLatitud, UbicacionInicialLongitud);
+            GeoCoordinate p2 = new GeoCoordinate(UbicacionFinalLatitud, UbicacionFinalLongitud);
+            return DistanciaGeograficaHelper.GetKmDistance(p1, p2);
+
+        }
+
+        public TimeSpan? getMinutosViaje()
+        {
+            if(FechaFinViaje == null)
+            {
+                return null;
+            }
+
+            var tiempo = this.FechaFinViaje - this.FechaInicioViaje;
+            return tiempo;
         }
     }
 }

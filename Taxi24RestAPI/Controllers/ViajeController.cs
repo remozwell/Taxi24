@@ -18,26 +18,48 @@ namespace Taxi24RestAPI.Controllers
     public class ViajeController : Controller
     {
         private readonly BussinessLogic context;
-        private readonly ConfigurationContext configContext;
 
-        public ViajeController(TaxiContext _context, ConfigurationContext config)
+        public ViajeController(TaxiContext _context, ConfigurationContext config, PriceGenerator priceG)
         {
-            context = new BussinessLogic(_context);
-            configContext = config;
+            context = new BussinessLogic(_context, config, priceG);
         }
 
 
         [HttpGet]
+        [Route("ViajesActivos")]
+        public ActionResult<ViajeModel> getViajes()
+        {
+            try
+            {
+                return Ok(context.GetViajesActivos());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
         [Route("NuevoViaje")]
         public ActionResult<ViajeModel> PostNuevoViaje(PasajeroModel persona, GeoCoordinate destino, double km = 0)
         {
             try
             {
-                if(km <= 0)
-                {
-                    km = configContext.RadioKilometroDefault;
-                }
-                return Ok(context.GenerarNuevoViaje(persona,destino, km));
+                return Ok(context.GenerarNuevoViaje(persona, destino, km));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("CompletarViaje")]
+        public ActionResult<FacturaModel> CompletarViaje(ViajeModel viaje)
+        {
+            try
+            {
+                return Ok(context.CompletarViaje(viaje));
             }
             catch (Exception ex)
             {
