@@ -61,11 +61,11 @@ namespace Taxi24RestAPI.Controllers
 
         [HttpGet]
         [Route("ObtenerConductoresCercanos")]
-        public ActionResult<List<ConductorModel>> GetAvailableConductors(int IDPasajero, double lon, double lat, double km)
+        public ActionResult<List<ConductorModel>> GetAvailableConductors(int IDPasajero, double lat, double lon, double km, int cantidadConductores)
         {
             try
             {
-                return Ok(context.GetAvailableConductores());
+                return Ok(context.GetAvailableConductores(IDPasajero, lat, lon, km, cantidadConductores));
             }
             catch (Exception ex)
             {
@@ -73,20 +73,6 @@ namespace Taxi24RestAPI.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("ObtenerDisponibles")]
-        public ActionResult<List<ConductorModel>> GetAvailableConductors(double latitude, double longitude, double km = 0)
-        {
-            try
-            {
-
-                return Ok(context.GetAvailableConductores(latitude, longitude, km));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
 
 
 

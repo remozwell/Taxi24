@@ -34,7 +34,7 @@ namespace Taxi24RestAPI.Bussiness
 
             var minLatitude = puntoInicial.Latitude - distanciaAprox;
             var minLongitude = puntoInicial.Longitude - distanciaAprox;
-            var min = new GeoCoordinate(maxLatitude, maxLongitude);
+            var min = new GeoCoordinate(minLatitude, minLongitude);
 
             return new RangeCoordenadaModel(min, max);
         }

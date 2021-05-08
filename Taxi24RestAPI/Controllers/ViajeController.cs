@@ -41,11 +41,11 @@ namespace Taxi24RestAPI.Controllers
 
         [HttpPost]
         [Route("NuevoViaje")]
-        public ActionResult<ViajeModel> PostNuevoViaje(PasajeroModel persona, GeoCoordinate destino, double km = 0)
+        public ActionResult<ViajeModel> PostNuevoViaje(PasajeroModel persona, [FromQuery] double lat, [FromQuery] double lon, [FromQuery] double km)
         {
             try
             {
-                return Ok(context.GenerarNuevoViaje(persona, destino, km));
+                return Ok(context.GenerarNuevoViaje(persona, new GeoCoordinate(lat, lon), km));
             }
             catch (Exception ex)
             {

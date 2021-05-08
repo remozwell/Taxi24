@@ -30,7 +30,7 @@ namespace Taxi24RestAPI.Bussiness
 
         public ConductorModel GetConductorByID(int ID)
         {
-            return _context.Tbl_Conductores.First(x=> x.ID == ID);
+            return _context.Tbl_Conductores.First(x => x.ID == ID);
         }
 
         public List<ConductorModel> GetAvailableConductores()
@@ -57,8 +57,8 @@ namespace Taxi24RestAPI.Bussiness
             return conductoresDisponibles.Where(x =>
                 x.UbicacionLatitud > distanciaGeografica.min.Latitude &&
                 x.UbicacionLongitud > distanciaGeografica.min.Longitude &&
-                x.UbicacionLatitud < distanciaGeografica.min.Latitude &&
-                x.UbicacionLongitud < distanciaGeografica.min.Longitude
+                x.UbicacionLatitud < distanciaGeografica.max.Latitude &&
+                x.UbicacionLongitud < distanciaGeografica.max.Longitude
                 ).ToList();
 
         }
@@ -68,7 +68,13 @@ namespace Taxi24RestAPI.Bussiness
         #region ViajesMethods
         public List<ViajeModel> GetViajesActivos()
         {
-            return _context.Tbl_Viajes.Where(x => x.EstatusViaje == 'A').ToList();
+            var list = _context.Tbl_Viajes.Where(x => x.EstatusViaje == 'A');
+            foreach (var v in list)
+            {
+                v.Conductor = _context.Tbl_Conductores.First(y => y.ID == v.IDConductor);
+                v.Pasajero = _context.Tbl_Pasajeros.First(y => y.ID == v.IDPasajero);
+            }
+            return list.ToList();
         }
 
 
@@ -77,31 +83,42 @@ namespace Taxi24RestAPI.Bussiness
 
             Random rd = new Random();
             var conductoresDisponibles = GetAvailableConductores(pasajero.UbicacionLatitud, pasajero.UbicacionLongitud, km);
+            if (conductoresDisponibles.Count == 0)
+            {
+                return null;
+            }
+
             var conductor = conductoresDisponibles[rd.Next(0, conductoresDisponibles.Count() - 1)];
 
             ViajeModel nuevoViaje = new ViajeModel()
             {
+                ID = 0,
                 IDConductor = conductor.ID,
                 IDPasajero = pasajero.ID,
-                Pasajero = pasajero,
-                Conductor = conductor,
+                //Pasajero = pasajero,
+                //Conductor = conductor,
+                FechaInicioViaje = DateTime.Now,
                 EstatusViaje = 'A',
                 UbicacionInicialLatitud = pasajero.UbicacionLatitud,
                 UbicacionInicialLongitud = pasajero.UbicacionLongitud,
                 UbicacionFinalLatitud = destino.Latitude,
                 UbicacionFinalLongitud = destino.Longitude
             };
-            var _return = _context.Tbl_Viajes.Add(nuevoViaje);
+            _context.Tbl_Viajes.Add(nuevoViaje);
             _context.SaveChanges();
-            return _return.Entity;
+            nuevoViaje.Pasajero = pasajero;
+            nuevoViaje.Conductor = conductor;
+            return nuevoViaje;
 
         }
 
         public FacturaModel CompletarViaje(ViajeModel viaje)
         {
             var thisViaje = _context.Tbl_Viajes.First(x => x.ID == viaje.ID);
-            thisViaje.FechaFinViaje = viaje.FechaFinViaje;
+            thisViaje.FechaFinViaje = DateTime.Now;
             thisViaje.EstatusViaje = 'C';
+            thisViaje.UbicacionFinalLatitud = viaje.UbicacionFinalLatitud;
+            thisViaje.UbicacionFinalLongitud = viaje.UbicacionFinalLongitud;
             _context.SaveChanges();
 
             double finalPrice = _priceContext.GetPrecioViaje(thisViaje.getDistanciaRecorrida(), thisViaje.getMinutosViaje().Value);
@@ -145,7 +162,7 @@ namespace Taxi24RestAPI.Bussiness
                 km = _configContext.RadioKilometroDefault;
             }
 
-            if(cantidadConductores <= 0)
+            if (cantidadConductores <= 0)
             {
                 cantidadConductores = _configContext.CantidadConductoresDefault;
             }

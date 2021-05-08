@@ -51,7 +51,7 @@ namespace Taxi24RestAPI.Controllers
         }
 
         [HttpGet]
-        [Route("ObtenerDisponibles")]
+        [Route("ObtenerDisponiblesCercanos")]
         public ActionResult<List<ConductorModel>> GetAvailableConductors(double latitude, double longitude, double km = 0)
         {
             try

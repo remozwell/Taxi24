@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Taxi24RestAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Taxi24RestAPI.Bussiness;
+using System.Text.Json;
 
 namespace Taxi24RestAPI
 {
@@ -28,7 +29,10 @@ namespace Taxi24RestAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            /*services.AddControllers().AddJsonOptions(options =>
+               options.JsonSerializerOptions.PropertyNamingPolicy = null);*/
+
+            services.AddControllers().AddNewtonsoftJson();
 
             services.AddSingleton(GetConfiguration());
             services.AddSingleton(GetPriceGenerator());
